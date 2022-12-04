@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  signInWithGooglePopup,
-  createUserDocumentFromAuth,
-  signInAuthUserWithEmailAndPassword,
-} from "../../utils/firebase/firebase.utils";
+import { signInWithGooglePopup, signInAuthUserWithEmailAndPassword } from "../../utils/firebase/firebase.utils";
 import FormInput from "../FormInput/FormInput";
 import Button from "../Button/Button";
 
@@ -14,7 +10,7 @@ const defaultFormFields = {
   password: "",
 };
 
-const SignUpForm = () => {
+const SignInForm = () => {
   const [formfields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formfields;
 
@@ -33,8 +29,7 @@ const SignUpForm = () => {
     try {
       if (!password && !email) throw new Error("please enter email and password");
 
-      const response = await signInAuthUserWithEmailAndPassword(email, password);
-      console.log(response);
+      await signInAuthUserWithEmailAndPassword(email, password);
 
       resetFormFields();
     } catch (error) {
@@ -52,8 +47,7 @@ const SignUpForm = () => {
   };
 
   const logGoogleUser = async () => {
-    const response = await signInWithGooglePopup();
-    await createUserDocumentFromAuth(response.user);
+    await signInWithGooglePopup();
   };
   return (
     <div className="sign-in-container">
@@ -74,4 +68,4 @@ const SignUpForm = () => {
   );
 };
 
-export default SignUpForm;
+export default SignInForm;

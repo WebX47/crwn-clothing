@@ -24,8 +24,8 @@ const SignUpForm = () => {
     try {
       if (password !== confirmPassword) throw new Error("password do not match");
 
-      const response = await createAuthUserWithEmailAndPassword(email, password);
-      await createUserDocumentFromAuth(response.user, { displayName });
+      const { user } = await createAuthUserWithEmailAndPassword(email, password);
+      await createUserDocumentFromAuth(user, { displayName });
       resetFormFields();
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
