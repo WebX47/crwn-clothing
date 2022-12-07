@@ -1,7 +1,7 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
+  signInWithRedirect,
   signInWithPopup,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
@@ -11,7 +11,6 @@ import {
 } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, writeBatch, query, getDocs } from "firebase/firestore";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDBSPLq3uyJMKTOT0eOxrv5V3n1kIdjKAg",
   authDomain: "crwn-clothing-db-c395f.firebaseapp.com",
@@ -21,9 +20,9 @@ const firebaseConfig = {
   appId: "1:518839748834:web:9c50c46bfe6f35cc6476bb",
 };
 
-// Initialize Firebase
 // const firebaseApp = initializeApp(firebaseConfig);
 initializeApp(firebaseConfig);
+
 const googleProvider = new GoogleAuthProvider();
 
 googleProvider.setCustomParameters({
@@ -32,10 +31,11 @@ googleProvider.setCustomParameters({
 
 export const auth = getAuth();
 export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
+export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider);
 
 export const db = getFirestore();
 
-export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd, field) => {
   const collectionRef = collection(db, collectionKey);
   const batch = writeBatch(db);
 
@@ -62,7 +62,7 @@ export const getCategoriesAndDocuments = async () => {
   return categoryMap;
 };
 
-export const createUserDocumentFromAuth = async (userAuth, additionalInfomrmation = {}) => {
+export const createUserDocumentFromAuth = async (userAuth, additionalInformation = {}) => {
   if (!userAuth) return;
 
   const userDocRef = doc(db, "users", userAuth.uid);
@@ -78,10 +78,10 @@ export const createUserDocumentFromAuth = async (userAuth, additionalInfomrmatio
         displayName,
         email,
         createdAt,
-        ...additionalInfomrmation,
+        ...additionalInformation,
       });
     } catch (error) {
-      console.log("error creating the user. ", error.message);
+      console.log("error creating the user", error.message);
     }
   }
 
@@ -91,12 +91,13 @@ export const createUserDocumentFromAuth = async (userAuth, additionalInfomrmatio
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
 
-  return createUserWithEmailAndPassword(auth, email, password);
+  return await createUserWithEmailAndPassword(auth, email, password);
 };
 
-export const signInAuthUserWithEmailAndPassword = (email, password) => {
-  if (!email && !password) return;
-  return signInWithEmailAndPassword(auth, email, password);
+export const signInAuthUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+
+  return await signInWithEmailAndPassword(auth, email, password);
 };
 
 export const signOutUser = async () => await signOut(auth);
